@@ -1,0 +1,49 @@
+# # .if ${.MAKEFLAGS:M${.CURDIR}/share/mk} == ""
+.MAKEFLAGS: -m ${.CURDIR}/share/mk
+# # .endif
+
+  _SRC_TOP__= "c:/minix-master"
+
+
+#include <bsd.own.mk>
+
+#
+# Sanity check: make sure that "make build" is not invoked simultaneously
+# with a standard recursive target.
+#
+exec("c:/Git/usr/bin/make.exe",build)
+exec("c:/Git/usr/bin/make.exe",release)
+# make	release
+exec("c:/Git/usr/bin/make.exe",snapshot)
+# make	snapshot
+# # .if make(build) || make(release) || make(snapshot)
+# # .for targ in ${TARGETS:N:Ncleandir}
+# # .if make(${targ}) && !target(.BEGIN)
+# .BEGIN:
+# 	@echo 'BUILD ABORTED: "make build" and "make ${targ}" are mutually exclusive.'
+# 	@false
+# # .endif
+# # .endfor
+# # .endif
+
+#
+# _SUBDIR is used to set SUBDIR, after removing directories that have
+# BUILD_${dir}=no, or that have no ${dir}/Makefile.
+#
+_SUBDIR=	tools lib include gnu external crypto/external bin games
+_SUBDIR+=	libexec sbin usr.bin
+_SUBDIR+=	usr.sbin share sys etc tests compat
+_SUBDIR+=	.WAIT rescue .WAIT distrib regress
+# # .if defined(__MINIX)
+# the minix subdir depends on some other things (e.g. lib/) 
+_SUBDIR+=	.WAIT minix
+# # .endif # defined(__MINIX)
+
+# # .for dir in ${_SUBDIR}
+# # .if "${dir}" == ".WAIT" \
+# 	|| (${BUILD_${dir}:Uyes} != "no" && exists(${dir}/Makefile))
+# SUBDIR+=	${dir}
+# # .endif
+# # .endfor
+
+exec("c:/minix-master/nbmake.exe",Makefile.boot)
